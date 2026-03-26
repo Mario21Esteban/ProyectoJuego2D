@@ -6,10 +6,13 @@ Build/
 Logs/
 UserSettings/
 
-# IDE
+# VS Code
 .vscode/
+
+# Visual Studio
 *.csproj
 *.sln
+*.user
 
 # OS
 .DS_Store
