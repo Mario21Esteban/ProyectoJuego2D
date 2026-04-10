@@ -14,6 +14,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Obstáculos")]
+    [SerializeField] private float velocidadPenalizada = 1f;  // velocidad al recibir golpe
+    [SerializeField] private float duracionPenalizacion = 2f; // segundos que dura la penalización
+
+
+
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
@@ -21,6 +27,9 @@ public class PlayerController : MonoBehaviour
     private float moveInput;
     private bool isGrounded;
     private bool isRunning;
+
+    private bool estaPenalizado = false;
+private float timerPenalizacion = 0f;
 
     private void Awake()
     {
@@ -36,6 +45,17 @@ public class PlayerController : MonoBehaviour
         CheckGrounded();
         UpdateAnimations();
         HandleFlip();
+
+        if (estaPenalizado)
+        {
+            timerPenalizacion -= Time.deltaTime;
+            if (timerPenalizacion <= 0f)
+            {
+                estaPenalizado = false;
+                animator.SetBool("isHit", false);
+            }
+        }
+
     }
 
     private void FixedUpdate()
@@ -53,6 +73,13 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
+        if (estaPenalizado)
+        {
+            // Durante la penalización solo puede moverse a velocidad reducida
+            rb.linearVelocity = new Vector2(moveInput * velocidadPenalizada, rb.linearVelocity.y);
+            return;
+        }
+
         float currentSpeed = isRunning ? runSpeed : walkSpeed;
         rb.linearVelocity = new Vector2(moveInput * currentSpeed, rb.linearVelocity.y);
     }
@@ -107,4 +134,15 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
+
+    public void RecibirGolpe()
+    {
+        if (estaPenalizado) return;
+         
+        estaPenalizado = true;
+        timerPenalizacion = duracionPenalizacion;
+        animator.SetBool("isHit", true);
+    }
+
+
 }

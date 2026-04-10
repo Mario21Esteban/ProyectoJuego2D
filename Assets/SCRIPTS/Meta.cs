@@ -7,8 +7,19 @@ public class Meta : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("¡Llegaste a la meta!");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            if (GameManager.Instance.TieneSuficientesEstrellas())
+            {
+                GameManager.Instance.DetenerCronometro();
+                int puntos = GameManager.Instance.CalcularPuntuacion();
+                float tiempo = GameManager.Instance.tiempoTranscurrido;
+
+                Debug.Log($"¡Nivel completado! Tiempo: {tiempo:F2} seg | Puntuación: {puntos}");
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+            else
+            {
+                Debug.Log("¡Necesitas más estrellas!");
+            }
         }
     }
 }
