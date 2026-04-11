@@ -142,6 +142,17 @@ private float timerPenalizacion = 0f;
         estaPenalizado = true;
         timerPenalizacion = duracionPenalizacion;
         animator.SetBool("isHit", true);
+
+        GameManager.Instance.RecibirDanio();
+    }
+
+    public void ActivarMuerte()
+    {
+        // Detiene el movimiento
+        rb.linearVelocity = Vector2.zero;
+        enabled = false; // desactiva el script para que no reciba más input
+
+        animator.SetBool("isDead", true);
     }
 
 

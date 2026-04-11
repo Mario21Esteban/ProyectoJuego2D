@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,6 +21,10 @@ public class GameManager : MonoBehaviour
     public int puntosBronce = 100;           // 61 seg o más
 
     private int puntuacionFinal = 0;
+
+    [Header("Vida")]
+    public int vidaMaxima = 3;
+    public int vidaActual;
 
     private void Awake()
     {
@@ -61,4 +66,38 @@ public class GameManager : MonoBehaviour
     {
         cronometroActivo = false;
     }
+
+    private void Start()
+    {
+        vidaActual = vidaMaxima;
+    }
+
+    public void RecibirDanio()
+    {
+        if (vidaActual <= 0) return;
+
+        vidaActual--;
+        HUDManager.Instance.ActualizarCorazones(vidaActual);
+
+        if (vidaActual <= 0)
+            Morir();
+    }
+
+    private void Morir()
+    {
+        Debug.Log("El jugador murió");
+        StartCoroutine(MorirCoroutine());
+    }
+
+    private System.Collections.IEnumerator MorirCoroutine()
+    {
+        // Notifica al jugador para activar animación
+        FindFirstObjectByType<PlayerController>().ActivarMuerte();
+
+        // Espera que termine la animación antes de reiniciar
+        yield return new WaitForSeconds(1.5f);
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
 }
